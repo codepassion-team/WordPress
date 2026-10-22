@@ -1,823 +1,854 @@
-/******/ (() => { // webpackBootstrap
-/******/ 	"use strict";
-/******/ 	// The require scope
-/******/ 	var __webpack_require__ = {};
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/************************************************************************/
-var __webpack_exports__ = {};
+(function() {
+"use strict";
+var wp;
+(wp ||= {}).listReusableBlocks = (() => {
+  var __create = Object.create;
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __commonJS = (cb, mod) => function __require() {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
 
-;// external ["wp","element"]
-const external_wp_element_namespaceObject = window["wp"]["element"];
-;// external ["wp","i18n"]
-const external_wp_i18n_namespaceObject = window["wp"]["i18n"];
-;// ./node_modules/tslib/tslib.es6.mjs
-/******************************************************************************
-Copyright (c) Microsoft Corporation.
+  // package-external:@wordpress/element
+  var require_element = __commonJS({
+    "package-external:@wordpress/element"(exports, module) {
+      module.exports = window.wp.element;
+    }
+  });
 
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
+  // package-external:@wordpress/i18n
+  var require_i18n = __commonJS({
+    "package-external:@wordpress/i18n"(exports, module) {
+      module.exports = window.wp.i18n;
+    }
+  });
 
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-/* global Reflect, Promise, SuppressedError, Symbol, Iterator */
+  // package-external:@wordpress/components
+  var require_components = __commonJS({
+    "package-external:@wordpress/components"(exports, module) {
+      module.exports = window.wp.components;
+    }
+  });
 
-var extendStatics = function(d, b) {
-  extendStatics = Object.setPrototypeOf ||
-      ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-      function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-  return extendStatics(d, b);
-};
+  // package-external:@wordpress/compose
+  var require_compose = __commonJS({
+    "package-external:@wordpress/compose"(exports, module) {
+      module.exports = window.wp.compose;
+    }
+  });
 
-function __extends(d, b) {
-  if (typeof b !== "function" && b !== null)
-      throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-  extendStatics(d, b);
-  function __() { this.constructor = d; }
-  d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
+  // package-external:@wordpress/api-fetch
+  var require_api_fetch = __commonJS({
+    "package-external:@wordpress/api-fetch"(exports, module) {
+      module.exports = window.wp.apiFetch;
+    }
+  });
 
-var __assign = function() {
-  __assign = Object.assign || function __assign(t) {
+  // vendor-external:react/jsx-runtime
+  var require_jsx_runtime = __commonJS({
+    "vendor-external:react/jsx-runtime"(exports, module) {
+      module.exports = window.ReactJSXRuntime;
+    }
+  });
+
+  // node_modules/.store/remove-accents@0.5.0-S_lnImruWgc6kBSjIJlPgw/node_modules/remove-accents/index.js
+  var require_remove_accents = __commonJS({
+    "node_modules/.store/remove-accents@0.5.0-S_lnImruWgc6kBSjIJlPgw/node_modules/remove-accents/index.js"(exports, module) {
+      var characterMap = {
+        "\xC0": "A",
+        "\xC1": "A",
+        "\xC2": "A",
+        "\xC3": "A",
+        "\xC4": "A",
+        "\xC5": "A",
+        "\u1EA4": "A",
+        "\u1EAE": "A",
+        "\u1EB2": "A",
+        "\u1EB4": "A",
+        "\u1EB6": "A",
+        "\xC6": "AE",
+        "\u1EA6": "A",
+        "\u1EB0": "A",
+        "\u0202": "A",
+        "\u1EA2": "A",
+        "\u1EA0": "A",
+        "\u1EA8": "A",
+        "\u1EAA": "A",
+        "\u1EAC": "A",
+        "\xC7": "C",
+        "\u1E08": "C",
+        "\xC8": "E",
+        "\xC9": "E",
+        "\xCA": "E",
+        "\xCB": "E",
+        "\u1EBE": "E",
+        "\u1E16": "E",
+        "\u1EC0": "E",
+        "\u1E14": "E",
+        "\u1E1C": "E",
+        "\u0206": "E",
+        "\u1EBA": "E",
+        "\u1EBC": "E",
+        "\u1EB8": "E",
+        "\u1EC2": "E",
+        "\u1EC4": "E",
+        "\u1EC6": "E",
+        "\xCC": "I",
+        "\xCD": "I",
+        "\xCE": "I",
+        "\xCF": "I",
+        "\u1E2E": "I",
+        "\u020A": "I",
+        "\u1EC8": "I",
+        "\u1ECA": "I",
+        "\xD0": "D",
+        "\xD1": "N",
+        "\xD2": "O",
+        "\xD3": "O",
+        "\xD4": "O",
+        "\xD5": "O",
+        "\xD6": "O",
+        "\xD8": "O",
+        "\u1ED0": "O",
+        "\u1E4C": "O",
+        "\u1E52": "O",
+        "\u020E": "O",
+        "\u1ECE": "O",
+        "\u1ECC": "O",
+        "\u1ED4": "O",
+        "\u1ED6": "O",
+        "\u1ED8": "O",
+        "\u1EDC": "O",
+        "\u1EDE": "O",
+        "\u1EE0": "O",
+        "\u1EDA": "O",
+        "\u1EE2": "O",
+        "\xD9": "U",
+        "\xDA": "U",
+        "\xDB": "U",
+        "\xDC": "U",
+        "\u1EE6": "U",
+        "\u1EE4": "U",
+        "\u1EEC": "U",
+        "\u1EEE": "U",
+        "\u1EF0": "U",
+        "\xDD": "Y",
+        "\xE0": "a",
+        "\xE1": "a",
+        "\xE2": "a",
+        "\xE3": "a",
+        "\xE4": "a",
+        "\xE5": "a",
+        "\u1EA5": "a",
+        "\u1EAF": "a",
+        "\u1EB3": "a",
+        "\u1EB5": "a",
+        "\u1EB7": "a",
+        "\xE6": "ae",
+        "\u1EA7": "a",
+        "\u1EB1": "a",
+        "\u0203": "a",
+        "\u1EA3": "a",
+        "\u1EA1": "a",
+        "\u1EA9": "a",
+        "\u1EAB": "a",
+        "\u1EAD": "a",
+        "\xE7": "c",
+        "\u1E09": "c",
+        "\xE8": "e",
+        "\xE9": "e",
+        "\xEA": "e",
+        "\xEB": "e",
+        "\u1EBF": "e",
+        "\u1E17": "e",
+        "\u1EC1": "e",
+        "\u1E15": "e",
+        "\u1E1D": "e",
+        "\u0207": "e",
+        "\u1EBB": "e",
+        "\u1EBD": "e",
+        "\u1EB9": "e",
+        "\u1EC3": "e",
+        "\u1EC5": "e",
+        "\u1EC7": "e",
+        "\xEC": "i",
+        "\xED": "i",
+        "\xEE": "i",
+        "\xEF": "i",
+        "\u1E2F": "i",
+        "\u020B": "i",
+        "\u1EC9": "i",
+        "\u1ECB": "i",
+        "\xF0": "d",
+        "\xF1": "n",
+        "\xF2": "o",
+        "\xF3": "o",
+        "\xF4": "o",
+        "\xF5": "o",
+        "\xF6": "o",
+        "\xF8": "o",
+        "\u1ED1": "o",
+        "\u1E4D": "o",
+        "\u1E53": "o",
+        "\u020F": "o",
+        "\u1ECF": "o",
+        "\u1ECD": "o",
+        "\u1ED5": "o",
+        "\u1ED7": "o",
+        "\u1ED9": "o",
+        "\u1EDD": "o",
+        "\u1EDF": "o",
+        "\u1EE1": "o",
+        "\u1EDB": "o",
+        "\u1EE3": "o",
+        "\xF9": "u",
+        "\xFA": "u",
+        "\xFB": "u",
+        "\xFC": "u",
+        "\u1EE7": "u",
+        "\u1EE5": "u",
+        "\u1EED": "u",
+        "\u1EEF": "u",
+        "\u1EF1": "u",
+        "\xFD": "y",
+        "\xFF": "y",
+        "\u0100": "A",
+        "\u0101": "a",
+        "\u0102": "A",
+        "\u0103": "a",
+        "\u0104": "A",
+        "\u0105": "a",
+        "\u0106": "C",
+        "\u0107": "c",
+        "\u0108": "C",
+        "\u0109": "c",
+        "\u010A": "C",
+        "\u010B": "c",
+        "\u010C": "C",
+        "\u010D": "c",
+        "C\u0306": "C",
+        "c\u0306": "c",
+        "\u010E": "D",
+        "\u010F": "d",
+        "\u0110": "D",
+        "\u0111": "d",
+        "\u0112": "E",
+        "\u0113": "e",
+        "\u0114": "E",
+        "\u0115": "e",
+        "\u0116": "E",
+        "\u0117": "e",
+        "\u0118": "E",
+        "\u0119": "e",
+        "\u011A": "E",
+        "\u011B": "e",
+        "\u011C": "G",
+        "\u01F4": "G",
+        "\u011D": "g",
+        "\u01F5": "g",
+        "\u011E": "G",
+        "\u011F": "g",
+        "\u0120": "G",
+        "\u0121": "g",
+        "\u0122": "G",
+        "\u0123": "g",
+        "\u0124": "H",
+        "\u0125": "h",
+        "\u0126": "H",
+        "\u0127": "h",
+        "\u1E2A": "H",
+        "\u1E2B": "h",
+        "\u0128": "I",
+        "\u0129": "i",
+        "\u012A": "I",
+        "\u012B": "i",
+        "\u012C": "I",
+        "\u012D": "i",
+        "\u012E": "I",
+        "\u012F": "i",
+        "\u0130": "I",
+        "\u0131": "i",
+        "\u0132": "IJ",
+        "\u0133": "ij",
+        "\u0134": "J",
+        "\u0135": "j",
+        "\u0136": "K",
+        "\u0137": "k",
+        "\u1E30": "K",
+        "\u1E31": "k",
+        "K\u0306": "K",
+        "k\u0306": "k",
+        "\u0139": "L",
+        "\u013A": "l",
+        "\u013B": "L",
+        "\u013C": "l",
+        "\u013D": "L",
+        "\u013E": "l",
+        "\u013F": "L",
+        "\u0140": "l",
+        "\u0141": "l",
+        "\u0142": "l",
+        "\u1E3E": "M",
+        "\u1E3F": "m",
+        "M\u0306": "M",
+        "m\u0306": "m",
+        "\u0143": "N",
+        "\u0144": "n",
+        "\u0145": "N",
+        "\u0146": "n",
+        "\u0147": "N",
+        "\u0148": "n",
+        "\u0149": "n",
+        "N\u0306": "N",
+        "n\u0306": "n",
+        "\u014C": "O",
+        "\u014D": "o",
+        "\u014E": "O",
+        "\u014F": "o",
+        "\u0150": "O",
+        "\u0151": "o",
+        "\u0152": "OE",
+        "\u0153": "oe",
+        "P\u0306": "P",
+        "p\u0306": "p",
+        "\u0154": "R",
+        "\u0155": "r",
+        "\u0156": "R",
+        "\u0157": "r",
+        "\u0158": "R",
+        "\u0159": "r",
+        "R\u0306": "R",
+        "r\u0306": "r",
+        "\u0212": "R",
+        "\u0213": "r",
+        "\u015A": "S",
+        "\u015B": "s",
+        "\u015C": "S",
+        "\u015D": "s",
+        "\u015E": "S",
+        "\u0218": "S",
+        "\u0219": "s",
+        "\u015F": "s",
+        "\u0160": "S",
+        "\u0161": "s",
+        "\u0162": "T",
+        "\u0163": "t",
+        "\u021B": "t",
+        "\u021A": "T",
+        "\u0164": "T",
+        "\u0165": "t",
+        "\u0166": "T",
+        "\u0167": "t",
+        "T\u0306": "T",
+        "t\u0306": "t",
+        "\u0168": "U",
+        "\u0169": "u",
+        "\u016A": "U",
+        "\u016B": "u",
+        "\u016C": "U",
+        "\u016D": "u",
+        "\u016E": "U",
+        "\u016F": "u",
+        "\u0170": "U",
+        "\u0171": "u",
+        "\u0172": "U",
+        "\u0173": "u",
+        "\u0216": "U",
+        "\u0217": "u",
+        "V\u0306": "V",
+        "v\u0306": "v",
+        "\u0174": "W",
+        "\u0175": "w",
+        "\u1E82": "W",
+        "\u1E83": "w",
+        "X\u0306": "X",
+        "x\u0306": "x",
+        "\u0176": "Y",
+        "\u0177": "y",
+        "\u0178": "Y",
+        "Y\u0306": "Y",
+        "y\u0306": "y",
+        "\u0179": "Z",
+        "\u017A": "z",
+        "\u017B": "Z",
+        "\u017C": "z",
+        "\u017D": "Z",
+        "\u017E": "z",
+        "\u017F": "s",
+        "\u0192": "f",
+        "\u01A0": "O",
+        "\u01A1": "o",
+        "\u01AF": "U",
+        "\u01B0": "u",
+        "\u01CD": "A",
+        "\u01CE": "a",
+        "\u01CF": "I",
+        "\u01D0": "i",
+        "\u01D1": "O",
+        "\u01D2": "o",
+        "\u01D3": "U",
+        "\u01D4": "u",
+        "\u01D5": "U",
+        "\u01D6": "u",
+        "\u01D7": "U",
+        "\u01D8": "u",
+        "\u01D9": "U",
+        "\u01DA": "u",
+        "\u01DB": "U",
+        "\u01DC": "u",
+        "\u1EE8": "U",
+        "\u1EE9": "u",
+        "\u1E78": "U",
+        "\u1E79": "u",
+        "\u01FA": "A",
+        "\u01FB": "a",
+        "\u01FC": "AE",
+        "\u01FD": "ae",
+        "\u01FE": "O",
+        "\u01FF": "o",
+        "\xDE": "TH",
+        "\xFE": "th",
+        "\u1E54": "P",
+        "\u1E55": "p",
+        "\u1E64": "S",
+        "\u1E65": "s",
+        "X\u0301": "X",
+        "x\u0301": "x",
+        "\u0403": "\u0413",
+        "\u0453": "\u0433",
+        "\u040C": "\u041A",
+        "\u045C": "\u043A",
+        "A\u030B": "A",
+        "a\u030B": "a",
+        "E\u030B": "E",
+        "e\u030B": "e",
+        "I\u030B": "I",
+        "i\u030B": "i",
+        "\u01F8": "N",
+        "\u01F9": "n",
+        "\u1ED2": "O",
+        "\u1ED3": "o",
+        "\u1E50": "O",
+        "\u1E51": "o",
+        "\u1EEA": "U",
+        "\u1EEB": "u",
+        "\u1E80": "W",
+        "\u1E81": "w",
+        "\u1EF2": "Y",
+        "\u1EF3": "y",
+        "\u0200": "A",
+        "\u0201": "a",
+        "\u0204": "E",
+        "\u0205": "e",
+        "\u0208": "I",
+        "\u0209": "i",
+        "\u020C": "O",
+        "\u020D": "o",
+        "\u0210": "R",
+        "\u0211": "r",
+        "\u0214": "U",
+        "\u0215": "u",
+        "B\u030C": "B",
+        "b\u030C": "b",
+        "\u010C\u0323": "C",
+        "\u010D\u0323": "c",
+        "\xCA\u030C": "E",
+        "\xEA\u030C": "e",
+        "F\u030C": "F",
+        "f\u030C": "f",
+        "\u01E6": "G",
+        "\u01E7": "g",
+        "\u021E": "H",
+        "\u021F": "h",
+        "J\u030C": "J",
+        "\u01F0": "j",
+        "\u01E8": "K",
+        "\u01E9": "k",
+        "M\u030C": "M",
+        "m\u030C": "m",
+        "P\u030C": "P",
+        "p\u030C": "p",
+        "Q\u030C": "Q",
+        "q\u030C": "q",
+        "\u0158\u0329": "R",
+        "\u0159\u0329": "r",
+        "\u1E66": "S",
+        "\u1E67": "s",
+        "V\u030C": "V",
+        "v\u030C": "v",
+        "W\u030C": "W",
+        "w\u030C": "w",
+        "X\u030C": "X",
+        "x\u030C": "x",
+        "Y\u030C": "Y",
+        "y\u030C": "y",
+        "A\u0327": "A",
+        "a\u0327": "a",
+        "B\u0327": "B",
+        "b\u0327": "b",
+        "\u1E10": "D",
+        "\u1E11": "d",
+        "\u0228": "E",
+        "\u0229": "e",
+        "\u0190\u0327": "E",
+        "\u025B\u0327": "e",
+        "\u1E28": "H",
+        "\u1E29": "h",
+        "I\u0327": "I",
+        "i\u0327": "i",
+        "\u0197\u0327": "I",
+        "\u0268\u0327": "i",
+        "M\u0327": "M",
+        "m\u0327": "m",
+        "O\u0327": "O",
+        "o\u0327": "o",
+        "Q\u0327": "Q",
+        "q\u0327": "q",
+        "U\u0327": "U",
+        "u\u0327": "u",
+        "X\u0327": "X",
+        "x\u0327": "x",
+        "Z\u0327": "Z",
+        "z\u0327": "z",
+        "\u0439": "\u0438",
+        "\u0419": "\u0418",
+        "\u0451": "\u0435",
+        "\u0401": "\u0415"
+      };
+      var chars = Object.keys(characterMap).join("|");
+      var allAccents = new RegExp(chars, "g");
+      var firstAccent = new RegExp(chars, "");
+      function matcher(match) {
+        return characterMap[match];
+      }
+      var removeAccents2 = function(string) {
+        return string.replace(allAccents, matcher);
+      };
+      var hasAccents = function(string) {
+        return !!string.match(firstAccent);
+      };
+      module.exports = removeAccents2;
+      module.exports.has = hasAccents;
+      module.exports.remove = removeAccents2;
+    }
+  });
+
+  // package-external:@wordpress/blob
+  var require_blob = __commonJS({
+    "package-external:@wordpress/blob"(exports, module) {
+      module.exports = window.wp.blob;
+    }
+  });
+
+  // packages/list-reusable-blocks/build-module/index.mjs
+  var import_element2 = __toESM(require_element(), 1);
+  var import_i18n3 = __toESM(require_i18n(), 1);
+
+  // packages/list-reusable-blocks/build-module/components/import-dropdown/index.mjs
+  var import_components2 = __toESM(require_components(), 1);
+  var import_compose2 = __toESM(require_compose(), 1);
+  var import_i18n2 = __toESM(require_i18n(), 1);
+
+  // packages/list-reusable-blocks/build-module/components/import-form/index.mjs
+  var import_components = __toESM(require_components(), 1);
+  var import_compose = __toESM(require_compose(), 1);
+  var import_element = __toESM(require_element(), 1);
+  var import_i18n = __toESM(require_i18n(), 1);
+
+  // packages/list-reusable-blocks/build-module/utils/import.mjs
+  var import_api_fetch = __toESM(require_api_fetch(), 1);
+
+  // packages/list-reusable-blocks/build-module/utils/file.mjs
+  function readTextFile(file) {
+    const reader = new window.FileReader();
+    return new Promise((resolve) => {
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  // packages/list-reusable-blocks/build-module/utils/import.mjs
+  async function importReusableBlock(file) {
+    const fileContent = await readTextFile(file);
+    let parsedContent;
+    try {
+      parsedContent = JSON.parse(fileContent);
+    } catch {
+      throw new Error("Invalid JSON file");
+    }
+    if (parsedContent.__file !== "wp_block" || !parsedContent.title || !parsedContent.content || typeof parsedContent.title !== "string" || typeof parsedContent.content !== "string" || parsedContent.syncStatus && typeof parsedContent.syncStatus !== "string") {
+      throw new Error("Invalid pattern JSON file");
+    }
+    const postType = await (0, import_api_fetch.default)({
+      path: `/wp/v2/types/wp_block`
+    });
+    const reusableBlock = await (0, import_api_fetch.default)({
+      path: `/wp/v2/${postType.rest_base}`,
+      data: {
+        title: parsedContent.title,
+        content: parsedContent.content,
+        status: "publish",
+        meta: parsedContent.syncStatus === "unsynced" ? { wp_pattern_sync_status: parsedContent.syncStatus } : void 0
+      },
+      method: "POST"
+    });
+    return reusableBlock;
+  }
+  var import_default = importReusableBlock;
+
+  // packages/list-reusable-blocks/build-module/components/import-form/index.mjs
+  var import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
+  function ImportForm({ instanceId, onUpload }) {
+    const inputId = "list-reusable-blocks-import-form-" + instanceId;
+    const formRef = (0, import_element.useRef)(null);
+    const [isLoading, setIsLoading] = (0, import_element.useState)(false);
+    const [error, setError] = (0, import_element.useState)(null);
+    const [file, setFile] = (0, import_element.useState)(null);
+    const onChangeFile = (event) => {
+      setFile(event.target.files?.[0] || null);
+      setError(null);
+    };
+    const onSubmit = (event) => {
+      event.preventDefault();
+      if (!file) {
+        return;
+      }
+      setIsLoading(true);
+      import_default(file).then((reusableBlock) => {
+        if (!formRef.current) {
+          return;
+        }
+        setIsLoading(false);
+        onUpload(reusableBlock);
+      }).catch((errors) => {
+        if (!formRef.current) {
+          return;
+        }
+        let uiMessage;
+        switch (errors.message) {
+          case "Invalid JSON file":
+            uiMessage = (0, import_i18n.__)("Invalid JSON file");
+            break;
+          case "Invalid pattern JSON file":
+            uiMessage = (0, import_i18n.__)("Invalid pattern JSON file");
+            break;
+          default:
+            uiMessage = (0, import_i18n.__)("Unknown error");
+        }
+        setIsLoading(false);
+        setError(uiMessage);
+      });
+    };
+    const onDismissError = () => {
+      setError(null);
+    };
+    return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+      "form",
+      {
+        className: "list-reusable-blocks-import-form",
+        onSubmit,
+        ref: formRef,
+        children: [
+          error && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_components.Notice, { status: "error", onRemove: () => onDismissError(), children: error }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+            "label",
+            {
+              htmlFor: inputId,
+              className: "list-reusable-blocks-import-form__label",
+              children: (0, import_i18n.__)("File")
+            }
+          ),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { id: inputId, type: "file", onChange: onChangeFile }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+            import_components.Button,
+            {
+              __next40pxDefaultSize: true,
+              type: "submit",
+              isBusy: isLoading,
+              accessibleWhenDisabled: true,
+              disabled: !file || isLoading,
+              variant: "secondary",
+              className: "list-reusable-blocks-import-form__button",
+              children: (0, import_i18n._x)("Import", "button label")
+            }
+          )
+        ]
+      }
+    );
+  }
+  var import_form_default = (0, import_compose.withInstanceId)(ImportForm);
+
+  // packages/list-reusable-blocks/build-module/components/import-dropdown/index.mjs
+  var import_jsx_runtime2 = __toESM(require_jsx_runtime(), 1);
+  function ImportDropdown({ onUpload }) {
+    return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      import_components2.Dropdown,
+      {
+        popoverProps: { placement: "bottom-start" },
+        contentClassName: "list-reusable-blocks-import-dropdown__content",
+        renderToggle: ({ isOpen, onToggle }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+          import_components2.Button,
+          {
+            size: "compact",
+            className: "list-reusable-blocks-import-dropdown__button",
+            "aria-expanded": isOpen,
+            onClick: onToggle,
+            variant: "primary",
+            children: (0, import_i18n2.__)("Import from JSON")
+          }
+        ),
+        renderContent: ({ onClose }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_form_default, { onUpload: (0, import_compose2.pipe)(onClose, onUpload) })
+      }
+    );
+  }
+  var import_dropdown_default = ImportDropdown;
+
+  // node_modules/.store/tslib@2.8.1-LT-dxu1EkVy7OUDyVf5glQ/node_modules/tslib/tslib.es6.mjs
+  var __assign = function() {
+    __assign = Object.assign || function __assign2(t) {
       for (var s, i = 1, n = arguments.length; i < n; i++) {
-          s = arguments[i];
-          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
       }
       return t;
-  }
-  return __assign.apply(this, arguments);
-}
-
-function __rest(s, e) {
-  var t = {};
-  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-      t[p] = s[p];
-  if (s != null && typeof Object.getOwnPropertySymbols === "function")
-      for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-          if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-              t[p[i]] = s[p[i]];
-      }
-  return t;
-}
-
-function __decorate(decorators, target, key, desc) {
-  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  return c > 3 && r && Object.defineProperty(target, key, r), r;
-}
-
-function __param(paramIndex, decorator) {
-  return function (target, key) { decorator(target, key, paramIndex); }
-}
-
-function __esDecorate(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-  function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
-  var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-  var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-  var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-  var _, done = false;
-  for (var i = decorators.length - 1; i >= 0; i--) {
-      var context = {};
-      for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-      for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-      context.addInitializer = function (f) { if (done) throw new TypeError("Cannot add initializers after decoration has completed"); extraInitializers.push(accept(f || null)); };
-      var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-      if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-      }
-      else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-      }
-  }
-  if (target) Object.defineProperty(target, contextIn.name, descriptor);
-  done = true;
-};
-
-function __runInitializers(thisArg, initializers, value) {
-  var useValue = arguments.length > 2;
-  for (var i = 0; i < initializers.length; i++) {
-      value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-  }
-  return useValue ? value : void 0;
-};
-
-function __propKey(x) {
-  return typeof x === "symbol" ? x : "".concat(x);
-};
-
-function __setFunctionName(f, name, prefix) {
-  if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
-  return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
-};
-
-function __metadata(metadataKey, metadataValue) {
-  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
-}
-
-function __awaiter(thisArg, _arguments, P, generator) {
-  function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-  return new (P || (P = Promise))(function (resolve, reject) {
-      function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-      function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-      function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-      step((generator = generator.apply(thisArg, _arguments || [])).next());
-  });
-}
-
-function __generator(thisArg, body) {
-  var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-  return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-  function verb(n) { return function (v) { return step([n, v]); }; }
-  function step(op) {
-      if (f) throw new TypeError("Generator is already executing.");
-      while (g && (g = 0, op[0] && (_ = 0)), _) try {
-          if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-          if (y = 0, t) op = [op[0] & 2, t.value];
-          switch (op[0]) {
-              case 0: case 1: t = op; break;
-              case 4: _.label++; return { value: op[1], done: false };
-              case 5: _.label++; y = op[1]; op = [0]; continue;
-              case 7: op = _.ops.pop(); _.trys.pop(); continue;
-              default:
-                  if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                  if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                  if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                  if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                  if (t[2]) _.ops.pop();
-                  _.trys.pop(); continue;
-          }
-          op = body.call(thisArg, _);
-      } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-      if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-  }
-}
-
-var __createBinding = Object.create ? (function(o, m, k, k2) {
-  if (k2 === undefined) k2 = k;
-  var desc = Object.getOwnPropertyDescriptor(m, k);
-  if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-  }
-  Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-  if (k2 === undefined) k2 = k;
-  o[k2] = m[k];
-});
-
-function __exportStar(m, o) {
-  for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p)) __createBinding(o, m, p);
-}
-
-function __values(o) {
-  var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-  if (m) return m.call(o);
-  if (o && typeof o.length === "number") return {
-      next: function () {
-          if (o && i >= o.length) o = void 0;
-          return { value: o && o[i++], done: !o };
-      }
+    };
+    return __assign.apply(this, arguments);
   };
-  throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-}
 
-function __read(o, n) {
-  var m = typeof Symbol === "function" && o[Symbol.iterator];
-  if (!m) return o;
-  var i = m.call(o), r, ar = [], e;
-  try {
-      while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-  }
-  catch (error) { e = { error: error }; }
-  finally {
-      try {
-          if (r && !r.done && (m = i["return"])) m.call(i);
-      }
-      finally { if (e) throw e.error; }
-  }
-  return ar;
-}
-
-/** @deprecated */
-function __spread() {
-  for (var ar = [], i = 0; i < arguments.length; i++)
-      ar = ar.concat(__read(arguments[i]));
-  return ar;
-}
-
-/** @deprecated */
-function __spreadArrays() {
-  for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-  for (var r = Array(s), k = 0, i = 0; i < il; i++)
-      for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-          r[k] = a[j];
-  return r;
-}
-
-function __spreadArray(to, from, pack) {
-  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-      if (ar || !(i in from)) {
-          if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-          ar[i] = from[i];
-      }
-  }
-  return to.concat(ar || Array.prototype.slice.call(from));
-}
-
-function __await(v) {
-  return this instanceof __await ? (this.v = v, this) : new __await(v);
-}
-
-function __asyncGenerator(thisArg, _arguments, generator) {
-  if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-  var g = generator.apply(thisArg, _arguments || []), i, q = [];
-  return i = Object.create((typeof AsyncIterator === "function" ? AsyncIterator : Object).prototype), verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function () { return this; }, i;
-  function awaitReturn(f) { return function (v) { return Promise.resolve(v).then(f, reject); }; }
-  function verb(n, f) { if (g[n]) { i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; if (f) i[n] = f(i[n]); } }
-  function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
-  function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
-  function fulfill(value) { resume("next", value); }
-  function reject(value) { resume("throw", value); }
-  function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
-}
-
-function __asyncDelegator(o) {
-  var i, p;
-  return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
-  function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: false } : f ? f(v) : v; } : f; }
-}
-
-function __asyncValues(o) {
-  if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-  var m = o[Symbol.asyncIterator], i;
-  return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-  function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-  function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-}
-
-function __makeTemplateObject(cooked, raw) {
-  if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-  return cooked;
-};
-
-var __setModuleDefault = Object.create ? (function(o, v) {
-  Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-  o["default"] = v;
-};
-
-function __importStar(mod) {
-  if (mod && mod.__esModule) return mod;
-  var result = {};
-  if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-  __setModuleDefault(result, mod);
-  return result;
-}
-
-function __importDefault(mod) {
-  return (mod && mod.__esModule) ? mod : { default: mod };
-}
-
-function __classPrivateFieldGet(receiver, state, kind, f) {
-  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-}
-
-function __classPrivateFieldSet(receiver, state, value, kind, f) {
-  if (kind === "m") throw new TypeError("Private method is not writable");
-  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-  return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-}
-
-function __classPrivateFieldIn(state, receiver) {
-  if (receiver === null || (typeof receiver !== "object" && typeof receiver !== "function")) throw new TypeError("Cannot use 'in' operator on non-object");
-  return typeof state === "function" ? receiver === state : state.has(receiver);
-}
-
-function __addDisposableResource(env, value, async) {
-  if (value !== null && value !== void 0) {
-    if (typeof value !== "object" && typeof value !== "function") throw new TypeError("Object expected.");
-    var dispose, inner;
-    if (async) {
-      if (!Symbol.asyncDispose) throw new TypeError("Symbol.asyncDispose is not defined.");
-      dispose = value[Symbol.asyncDispose];
-    }
-    if (dispose === void 0) {
-      if (!Symbol.dispose) throw new TypeError("Symbol.dispose is not defined.");
-      dispose = value[Symbol.dispose];
-      if (async) inner = dispose;
-    }
-    if (typeof dispose !== "function") throw new TypeError("Object not disposable.");
-    if (inner) dispose = function() { try { inner.call(this); } catch (e) { return Promise.reject(e); } };
-    env.stack.push({ value: value, dispose: dispose, async: async });
-  }
-  else if (async) {
-    env.stack.push({ async: true });
-  }
-  return value;
-}
-
-var _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
-  var e = new Error(message);
-  return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
-};
-
-function __disposeResources(env) {
-  function fail(e) {
-    env.error = env.hasError ? new _SuppressedError(e, env.error, "An error was suppressed during disposal.") : e;
-    env.hasError = true;
-  }
-  var r, s = 0;
-  function next() {
-    while (r = env.stack.pop()) {
-      try {
-        if (!r.async && s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);
-        if (r.dispose) {
-          var result = r.dispose.call(r.value);
-          if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) { fail(e); return next(); });
-        }
-        else s |= 1;
-      }
-      catch (e) {
-        fail(e);
-      }
-    }
-    if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();
-    if (env.hasError) throw env.error;
-  }
-  return next();
-}
-
-/* harmony default export */ const tslib_es6 = ({
-  __extends,
-  __assign,
-  __rest,
-  __decorate,
-  __param,
-  __metadata,
-  __awaiter,
-  __generator,
-  __createBinding,
-  __exportStar,
-  __values,
-  __read,
-  __spread,
-  __spreadArrays,
-  __spreadArray,
-  __await,
-  __asyncGenerator,
-  __asyncDelegator,
-  __asyncValues,
-  __makeTemplateObject,
-  __importStar,
-  __importDefault,
-  __classPrivateFieldGet,
-  __classPrivateFieldSet,
-  __classPrivateFieldIn,
-  __addDisposableResource,
-  __disposeResources,
-});
-
-;// ./node_modules/lower-case/dist.es2015/index.js
-/**
- * Source: ftp://ftp.unicode.org/Public/UCD/latest/ucd/SpecialCasing.txt
- */
-var SUPPORTED_LOCALE = {
-    tr: {
-        regexp: /\u0130|\u0049|\u0049\u0307/g,
-        map: {
-            İ: "\u0069",
-            I: "\u0131",
-            İ: "\u0069",
-        },
-    },
-    az: {
-        regexp: /\u0130/g,
-        map: {
-            İ: "\u0069",
-            I: "\u0131",
-            İ: "\u0069",
-        },
-    },
-    lt: {
-        regexp: /\u0049|\u004A|\u012E|\u00CC|\u00CD|\u0128/g,
-        map: {
-            I: "\u0069\u0307",
-            J: "\u006A\u0307",
-            Į: "\u012F\u0307",
-            Ì: "\u0069\u0307\u0300",
-            Í: "\u0069\u0307\u0301",
-            Ĩ: "\u0069\u0307\u0303",
-        },
-    },
-};
-/**
- * Localized lower case.
- */
-function localeLowerCase(str, locale) {
-    var lang = SUPPORTED_LOCALE[locale.toLowerCase()];
-    if (lang)
-        return lowerCase(str.replace(lang.regexp, function (m) { return lang.map[m]; }));
-    return lowerCase(str);
-}
-/**
- * Lower case as a function.
- */
-function lowerCase(str) {
+  // node_modules/.store/lower-case@2.0.2-5YZP5nczP5_f_8Vt5KBPjA/node_modules/lower-case/dist.es2015/index.js
+  function lowerCase(str) {
     return str.toLowerCase();
-}
+  }
 
-;// ./node_modules/no-case/dist.es2015/index.js
-
-// Support camel case ("camelCase" -> "camel Case" and "CAMELCase" -> "CAMEL Case").
-var DEFAULT_SPLIT_REGEXP = [/([a-z0-9])([A-Z])/g, /([A-Z])([A-Z][a-z])/g];
-// Remove all non-word characters.
-var DEFAULT_STRIP_REGEXP = /[^A-Z0-9]+/gi;
-/**
- * Normalize the string into something other libraries can manipulate easier.
- */
-function noCase(input, options) {
-    if (options === void 0) { options = {}; }
+  // node_modules/.store/no-case@3.0.4-R4Hzt6qn-erEsTak7ojDpg/node_modules/no-case/dist.es2015/index.js
+  var DEFAULT_SPLIT_REGEXP = [/([a-z0-9])([A-Z])/g, /([A-Z])([A-Z][a-z])/g];
+  var DEFAULT_STRIP_REGEXP = /[^A-Z0-9]+/gi;
+  function noCase(input, options) {
+    if (options === void 0) {
+      options = {};
+    }
     var _a = options.splitRegexp, splitRegexp = _a === void 0 ? DEFAULT_SPLIT_REGEXP : _a, _b = options.stripRegexp, stripRegexp = _b === void 0 ? DEFAULT_STRIP_REGEXP : _b, _c = options.transform, transform = _c === void 0 ? lowerCase : _c, _d = options.delimiter, delimiter = _d === void 0 ? " " : _d;
     var result = replace(replace(input, splitRegexp, "$1\0$2"), stripRegexp, "\0");
     var start = 0;
     var end = result.length;
-    // Trim the delimiter from around the output string.
     while (result.charAt(start) === "\0")
-        start++;
+      start++;
     while (result.charAt(end - 1) === "\0")
-        end--;
-    // Transform each token independently.
+      end--;
     return result.slice(start, end).split("\0").map(transform).join(delimiter);
-}
-/**
- * Replace `re` in the input string with the replacement value.
- */
-function replace(input, re, value) {
+  }
+  function replace(input, re, value) {
     if (re instanceof RegExp)
-        return input.replace(re, value);
-    return re.reduce(function (input, re) { return input.replace(re, value); }, input);
-}
+      return input.replace(re, value);
+    return re.reduce(function(input2, re2) {
+      return input2.replace(re2, value);
+    }, input);
+  }
 
-;// ./node_modules/dot-case/dist.es2015/index.js
-
-
-function dotCase(input, options) {
-    if (options === void 0) { options = {}; }
+  // node_modules/.store/dot-case@3.0.4-hi-rLWlWmiZ169n4dWcbUA/node_modules/dot-case/dist.es2015/index.js
+  function dotCase(input, options) {
+    if (options === void 0) {
+      options = {};
+    }
     return noCase(input, __assign({ delimiter: "." }, options));
-}
+  }
 
-;// ./node_modules/param-case/dist.es2015/index.js
-
-
-function paramCase(input, options) {
-    if (options === void 0) { options = {}; }
+  // node_modules/.store/param-case@3.0.4-rdAht_VwpGpefPRylN2bTA/node_modules/param-case/dist.es2015/index.js
+  function paramCase(input, options) {
+    if (options === void 0) {
+      options = {};
+    }
     return dotCase(input, __assign({ delimiter: "-" }, options));
-}
-
-;// external ["wp","apiFetch"]
-const external_wp_apiFetch_namespaceObject = window["wp"]["apiFetch"];
-var external_wp_apiFetch_default = /*#__PURE__*/__webpack_require__.n(external_wp_apiFetch_namespaceObject);
-;// external ["wp","blob"]
-const external_wp_blob_namespaceObject = window["wp"]["blob"];
-;// ./node_modules/@wordpress/list-reusable-blocks/build-module/utils/export.js
-/**
- * External dependencies
- */
-
-
-/**
- * WordPress dependencies
- */
-
-
-/**
- * Internal dependencies
- */
-
-
-/**
- * Export a reusable block as a JSON file.
- *
- * @param {number} id
- */
-async function exportReusableBlock(id) {
-  const postType = await external_wp_apiFetch_default()({
-    path: `/wp/v2/types/wp_block`
-  });
-  const post = await external_wp_apiFetch_default()({
-    path: `/wp/v2/${postType.rest_base}/${id}?context=edit`
-  });
-  const title = post.title.raw;
-  const content = post.content.raw;
-  const syncStatus = post.wp_pattern_sync_status;
-  const fileContent = JSON.stringify({
-    __file: 'wp_block',
-    title,
-    content,
-    syncStatus
-  }, null, 2);
-  const fileName = paramCase(title) + '.json';
-  (0,external_wp_blob_namespaceObject.downloadBlob)(fileName, fileContent, 'application/json');
-}
-/* harmony default export */ const utils_export = (exportReusableBlock);
-
-;// external ["wp","compose"]
-const external_wp_compose_namespaceObject = window["wp"]["compose"];
-;// external ["wp","components"]
-const external_wp_components_namespaceObject = window["wp"]["components"];
-;// ./node_modules/@wordpress/list-reusable-blocks/build-module/utils/file.js
-/**
- * Reads the textual content of the given file.
- *
- * @param {File} file File.
- * @return {Promise<string>}  Content of the file.
- */
-function readTextFile(file) {
-  const reader = new window.FileReader();
-  return new Promise(resolve => {
-    reader.onload = () => {
-      resolve(reader.result);
-    };
-    reader.readAsText(file);
-  });
-}
-
-;// ./node_modules/@wordpress/list-reusable-blocks/build-module/utils/import.js
-/**
- * WordPress dependencies
- */
-
-
-/**
- * Internal dependencies
- */
-
-
-/**
- * Import a reusable block from a JSON file.
- *
- * @param {File} file File.
- * @return {Promise} Promise returning the imported reusable block.
- */
-async function importReusableBlock(file) {
-  const fileContent = await readTextFile(file);
-  let parsedContent;
-  try {
-    parsedContent = JSON.parse(fileContent);
-  } catch (e) {
-    throw new Error('Invalid JSON file');
   }
-  if (parsedContent.__file !== 'wp_block' || !parsedContent.title || !parsedContent.content || typeof parsedContent.title !== 'string' || typeof parsedContent.content !== 'string' || parsedContent.syncStatus && typeof parsedContent.syncStatus !== 'string') {
-    throw new Error('Invalid pattern JSON file');
+
+  // packages/list-reusable-blocks/build-module/utils/export.mjs
+  var import_remove_accents = __toESM(require_remove_accents(), 1);
+  var import_api_fetch2 = __toESM(require_api_fetch(), 1);
+  var import_blob = __toESM(require_blob(), 1);
+  async function exportReusableBlock(id) {
+    const postType = await (0, import_api_fetch2.default)({
+      path: `/wp/v2/types/wp_block`
+    });
+    const post = await (0, import_api_fetch2.default)({
+      path: `/wp/v2/${postType.rest_base}/${id}?context=edit`
+    });
+    const title = post.title.raw;
+    const content = post.content.raw;
+    const syncStatus = post.wp_pattern_sync_status;
+    const fileContent = JSON.stringify(
+      {
+        __file: "wp_block",
+        title,
+        content,
+        syncStatus
+      },
+      null,
+      2
+    );
+    const fileName = paramCase((0, import_remove_accents.default)(title)) + ".json";
+    (0, import_blob.downloadBlob)(fileName, fileContent, "application/json");
   }
-  const postType = await external_wp_apiFetch_default()({
-    path: `/wp/v2/types/wp_block`
-  });
-  const reusableBlock = await external_wp_apiFetch_default()({
-    path: `/wp/v2/${postType.rest_base}`,
-    data: {
-      title: parsedContent.title,
-      content: parsedContent.content,
-      status: 'publish',
-      meta: parsedContent.syncStatus === 'unsynced' ? {
-        wp_pattern_sync_status: parsedContent.syncStatus
-      } : undefined
-    },
-    method: 'POST'
-  });
-  return reusableBlock;
-}
-/* harmony default export */ const utils_import = (importReusableBlock);
+  var export_default = exportReusableBlock;
 
-;// external "ReactJSXRuntime"
-const external_ReactJSXRuntime_namespaceObject = window["ReactJSXRuntime"];
-;// ./node_modules/@wordpress/list-reusable-blocks/build-module/components/import-form/index.js
-/**
- * WordPress dependencies
- */
-
-
-
-
-
-/**
- * Internal dependencies
- */
-
-
-
-function ImportForm({
-  instanceId,
-  onUpload
-}) {
-  const inputId = 'list-reusable-blocks-import-form-' + instanceId;
-  const formRef = (0,external_wp_element_namespaceObject.useRef)();
-  const [isLoading, setIsLoading] = (0,external_wp_element_namespaceObject.useState)(false);
-  const [error, setError] = (0,external_wp_element_namespaceObject.useState)(null);
-  const [file, setFile] = (0,external_wp_element_namespaceObject.useState)(null);
-  const onChangeFile = event => {
-    setFile(event.target.files[0]);
-    setError(null);
-  };
-  const onSubmit = event => {
+  // packages/list-reusable-blocks/build-module/index.mjs
+  var import_jsx_runtime3 = __toESM(require_jsx_runtime(), 1);
+  document.body.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!target.classList.contains("wp-list-reusable-blocks__export")) {
+      return;
+    }
     event.preventDefault();
-    if (!file) {
+    const blockId = target.dataset.id;
+    if (blockId) {
+      export_default(Number(blockId));
+    }
+  });
+  document.addEventListener("DOMContentLoaded", () => {
+    const button = document.querySelector(".page-title-action");
+    if (!button) {
       return;
     }
-    setIsLoading({
-      isLoading: true
-    });
-    utils_import(file).then(reusableBlock => {
-      if (!formRef) {
+    const showNotice = () => {
+      const notice = document.createElement("div");
+      notice.className = "notice notice-success is-dismissible";
+      notice.innerHTML = `<p>${(0, import_i18n3.__)("Pattern imported successfully!")}</p>`;
+      const headerEnd = document.querySelector(".wp-header-end");
+      if (!headerEnd || !headerEnd.parentNode) {
         return;
       }
-      setIsLoading(false);
-      onUpload(reusableBlock);
-    }).catch(errors => {
-      if (!formRef) {
-        return;
-      }
-      let uiMessage;
-      switch (errors.message) {
-        case 'Invalid JSON file':
-          uiMessage = (0,external_wp_i18n_namespaceObject.__)('Invalid JSON file');
-          break;
-        case 'Invalid pattern JSON file':
-          uiMessage = (0,external_wp_i18n_namespaceObject.__)('Invalid pattern JSON file');
-          break;
-        default:
-          uiMessage = (0,external_wp_i18n_namespaceObject.__)('Unknown error');
-      }
-      setIsLoading(false);
-      setError(uiMessage);
-    });
-  };
-  const onDismissError = () => {
-    setError(null);
-  };
-  return /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsxs)("form", {
-    className: "list-reusable-blocks-import-form",
-    onSubmit: onSubmit,
-    ref: formRef,
-    children: [error && /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(external_wp_components_namespaceObject.Notice, {
-      status: "error",
-      onRemove: () => onDismissError(),
-      children: error
-    }), /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)("label", {
-      htmlFor: inputId,
-      className: "list-reusable-blocks-import-form__label",
-      children: (0,external_wp_i18n_namespaceObject.__)('File')
-    }), /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)("input", {
-      id: inputId,
-      type: "file",
-      onChange: onChangeFile
-    }), /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(external_wp_components_namespaceObject.Button, {
-      __next40pxDefaultSize: true,
-      type: "submit",
-      isBusy: isLoading,
-      accessibleWhenDisabled: true,
-      disabled: !file || isLoading,
-      variant: "secondary",
-      className: "list-reusable-blocks-import-form__button",
-      children: (0,external_wp_i18n_namespaceObject._x)('Import', 'button label')
-    })]
-  });
-}
-/* harmony default export */ const import_form = ((0,external_wp_compose_namespaceObject.withInstanceId)(ImportForm));
-
-;// ./node_modules/@wordpress/list-reusable-blocks/build-module/components/import-dropdown/index.js
-/**
- * WordPress dependencies
- */
-
-
-
-
-/**
- * Internal dependencies
- */
-
-
-function ImportDropdown({
-  onUpload
-}) {
-  return /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(external_wp_components_namespaceObject.Dropdown, {
-    popoverProps: {
-      placement: 'bottom-start'
-    },
-    contentClassName: "list-reusable-blocks-import-dropdown__content",
-    renderToggle: ({
-      isOpen,
-      onToggle
-    }) => /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(external_wp_components_namespaceObject.Button, {
-      size: "compact",
-      className: "list-reusable-blocks-import-dropdown__button",
-      "aria-expanded": isOpen,
-      onClick: onToggle,
-      variant: "primary",
-      children: (0,external_wp_i18n_namespaceObject.__)('Import from JSON')
-    }),
-    renderContent: ({
-      onClose
-    }) => /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(import_form, {
-      onUpload: (0,external_wp_compose_namespaceObject.pipe)(onClose, onUpload)
-    })
-  });
-}
-/* harmony default export */ const import_dropdown = (ImportDropdown);
-
-;// ./node_modules/@wordpress/list-reusable-blocks/build-module/index.js
-/**
- * WordPress dependencies
- */
-
-
-
-/**
- * Internal dependencies
- */
-
-
-
-// Setup Export Links.
-
-document.body.addEventListener('click', event => {
-  if (!event.target.classList.contains('wp-list-reusable-blocks__export')) {
-    return;
-  }
-  event.preventDefault();
-  utils_export(event.target.dataset.id);
-});
-
-// Setup Import Form.
-document.addEventListener('DOMContentLoaded', () => {
-  const button = document.querySelector('.page-title-action');
-  if (!button) {
-    return;
-  }
-  const showNotice = () => {
-    const notice = document.createElement('div');
-    notice.className = 'notice notice-success is-dismissible';
-    notice.innerHTML = `<p>${(0,external_wp_i18n_namespaceObject.__)('Pattern imported successfully!')}</p>`;
-    const headerEnd = document.querySelector('.wp-header-end');
-    if (!headerEnd) {
+      headerEnd.parentNode.insertBefore(notice, headerEnd);
+    };
+    const container = document.createElement("div");
+    container.className = "list-reusable-blocks__container";
+    if (!button.parentNode) {
       return;
     }
-    headerEnd.parentNode.insertBefore(notice, headerEnd);
-  };
-  const container = document.createElement('div');
-  container.className = 'list-reusable-blocks__container';
-  button.parentNode.insertBefore(container, button);
-  (0,external_wp_element_namespaceObject.createRoot)(container).render( /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(external_wp_element_namespaceObject.StrictMode, {
-    children: /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(import_dropdown, {
-      onUpload: showNotice
-    })
-  }));
-});
-
-(window.wp = window.wp || {}).listReusableBlocks = __webpack_exports__;
-/******/ })()
-;
+    button.parentNode.insertBefore(container, button);
+    (0, import_element2.createRoot)(container).render(
+      /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_element2.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_dropdown_default, { onUpload: showNotice }) })
+    );
+  });
+})();
+(window.wp ||= {}).listReusableBlocks = wp.listReusableBlocks;
+})();

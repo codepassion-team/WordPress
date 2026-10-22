@@ -191,9 +191,11 @@ class wp_xmlrpc_server extends IXR_Server {
 		 * Respect old get_option() filters left for back-compat when the 'enable_xmlrpc'
 		 * option was deprecated in 3.5.0. Use the {@see 'xmlrpc_enabled'} hook instead.
 		 */
-		$is_enabled = apply_filters( 'pre_option_enable_xmlrpc', false );
+		/** This filter is documented in wp-includes/option.php */
+		$is_enabled = apply_filters( 'pre_option_enable_xmlrpc', false, 'enable_xmlrpc', false );
 		if ( false === $is_enabled ) {
-			$is_enabled = apply_filters( 'option_enable_xmlrpc', true );
+			/** This filter is documented in wp-includes/option.php */
+			$is_enabled = apply_filters( 'option_enable_xmlrpc', true, 'enable_xmlrpc' );
 		}
 
 		/**
@@ -262,15 +264,20 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @since 1.5.0
 	 *
-	 * @param array $args {
+	 * @param int[] $args {
 	 *     Method arguments. Note: arguments must be ordered as documented.
 	 *
 	 *     @type int $0 A number to add.
 	 *     @type int $1 A second number to add.
 	 * }
-	 * @return int Sum of the two given numbers.
+	 * @return int|IXR_Error Sum of the two given numbers.
 	 */
 	public function addTwoNumbers( $args ) {
+		if ( ! is_array( $args ) || count( $args ) !== 2 || ! is_int( $args[0] ) || ! is_int( $args[1] ) ) {
+			$this->error = new IXR_Error( 400, __( 'Invalid arguments passed to this XML-RPC method. Requires two integers.' ) );
+			return $this->error;
+		}
+
 		$number1 = $args[0];
 		$number2 = $args[1];
 		return $number1 + $number2;
@@ -280,14 +287,29 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * Logs user in.
 	 *
 	 * @since 2.8.0
+	 * @since 7.2.0 Returns an error if the `$username` or `$password` argument is not a scalar.
 	 *
 	 * @param string $username User's username.
 	 * @param string $password User's password.
 	 * @return WP_User|false WP_User object if authentication passed, false otherwise.
 	 */
-	public function login( $username, $password ) {
+	public function login(
+		$username,
+		#[\SensitiveParameter]
+		$password
+	) {
 		if ( ! $this->is_enabled ) {
-			$this->error = new IXR_Error( 405, sprintf( __( 'XML-RPC services are disabled on this site.' ) ) );
+			$this->error = new IXR_Error( 405, __( 'XML-RPC services are disabled on this site.' ) );
+			return false;
+		}
+
+		/*
+		 * Arrays and objects sent by the client would cause a fatal error in
+		 * wp_authenticate(). Other scalar types are tolerated because PHP
+		 * coerces them to strings, which preserves backward compatibility.
+		 */
+		if ( ! is_scalar( $username ) || ! is_scalar( $password ) ) {
+			$this->error = new IXR_Error( 400, __( 'The username and password arguments should be strings.' ) );
 			return false;
 		}
 
@@ -330,7 +352,11 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * @param string $password User's password.
 	 * @return bool Whether authentication passed.
 	 */
-	public function login_pass_ok( $username, $password ) {
+	public function login_pass_ok(
+		$username,
+		#[\SensitiveParameter]
+		$password
+	) {
 		return (bool) $this->login( $username, $password );
 	}
 
@@ -340,7 +366,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * @since 1.5.2
 	 *
 	 * @param string|array $data Escape single string or array of strings.
-	 * @return string|void Returns with string is passed, alters by-reference
+	 * @return string|null Returns with string if passed, alters by-reference
 	 *                     when array is passed.
 	 */
 	public function escape( &$data ) {
@@ -355,6 +381,7 @@ class wp_xmlrpc_server extends IXR_Server {
 				$v = wp_slash( $v );
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -365,8 +392,8 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @since 5.7.3
 	 *
-	 * @param IXR_Error|string $error   Error code or an error object.
-	 * @param false            $message Error message. Optional.
+	 * @param IXR_Error|int $error   Error code or an error object.
+	 * @param string|false  $message Error message. Optional. Default false.
 	 */
 	public function error( $error, $message = false ) {
 		// Accepts either an error object or an error code and message
@@ -786,6 +813,25 @@ class wp_xmlrpc_server extends IXR_Server {
 	protected function minimum_args( $args, $count ) {
 		if ( ! is_array( $args ) || count( $args ) < $count ) {
 			$this->error = new IXR_Error( 400, __( 'Insufficient arguments passed to this XML-RPC method.' ) );
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Checks that the `$fields` argument received from a client is an array.
+	 *
+	 * @since 7.2.0
+	 *
+	 * @param mixed $fields The `$fields` argument to check.
+	 * @return bool True if `$fields` is an array, false otherwise.
+	 *
+	 * @phpstan-assert-if-true array $fields
+	 */
+	protected function _is_fields_array( $fields ): bool {
+		if ( ! is_array( $fields ) ) {
+			$this->error = new IXR_Error( 400, __( 'The fields argument must be an array.' ) );
 			return false;
 		}
 
@@ -1446,6 +1492,33 @@ class wp_xmlrpc_server extends IXR_Server {
 			return new IXR_Error( 403, __( 'Invalid post type.' ) );
 		}
 
+		// Reject writes to internal-only builtin post types (e.g. customize_changeset)
+		// whose intended write path is a dedicated helper, not a generic post API.
+		$is_internal_only = (
+			empty( $post_type->public )
+			&& empty( $post_type->show_in_rest )
+			&& ! empty( $post_type->_builtin )
+		);
+
+		/**
+		 * Filters whether a post type accepts writes via XML-RPC.
+		 *
+		 * Defaults to false for internal-only builtin post types (public=false,
+		 * show_in_rest=false, _builtin=true), such as customize_changeset, whose
+		 * writes are meant to flow through dedicated helpers. Return true to opt
+		 * a post type back in.
+		 *
+		 * @since 7.1.1
+		 *
+		 * @param bool         $allowed   Whether the post type accepts XML-RPC writes.
+		 * @param WP_Post_Type $post_type The post type object.
+		 */
+		$allowed = apply_filters( 'xmlrpc_allow_post_type_writes', ! $is_internal_only, $post_type );
+
+		if ( ! $allowed ) {
+			return new IXR_Error( 403, __( 'Sorry, this post type is not supported over XML-RPC.' ) );
+		}
+
 		$update = ! empty( $post_data['ID'] );
 
 		if ( $update ) {
@@ -1672,7 +1745,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		}
 
 		// Handle enclosures.
-		$enclosure = isset( $post_data['enclosure'] ) ? $post_data['enclosure'] : null;
+		$enclosure = $post_data['enclosure'] ?? null;
 		$this->add_enclosure_if_new( $post_id, $enclosure );
 
 		$this->attach_uploads( $post_id, $post_data['post_content'] );
@@ -1855,6 +1928,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * Retrieves a post.
 	 *
 	 * @since 3.4.0
+	 * @since 7.2.0 Returns an error if the `$fields` argument is not an array.
 	 *
 	 * The optional $fields parameter specifies what fields will be included
 	 * in the response array. This should be a list of field names. 'post_id' will
@@ -1912,6 +1986,10 @@ class wp_xmlrpc_server extends IXR_Server {
 		$post_id  = (int) $args[3];
 
 		if ( isset( $args[4] ) ) {
+			if ( ! $this->_is_fields_array( $args[4] ) ) {
+				return $this->error;
+			}
+
 			$fields = $args[4];
 		} else {
 			/**
@@ -1951,6 +2029,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * Retrieves posts.
 	 *
 	 * @since 3.4.0
+	 * @since 7.2.0 Returns an error if the `$fields` argument is not an array.
 	 *
 	 * @see wp_get_recent_posts()
 	 * @see wp_getPost() for more on `$fields`
@@ -1978,9 +2057,13 @@ class wp_xmlrpc_server extends IXR_Server {
 
 		$username = $args[1];
 		$password = $args[2];
-		$filter   = isset( $args[3] ) ? $args[3] : array();
+		$filter   = $args[3] ?? array();
 
 		if ( isset( $args[4] ) ) {
+			if ( ! $this->_is_fields_array( $args[4] ) ) {
+				return $this->error;
+			}
+
 			$fields = $args[4];
 		} else {
 			/** This action is documented in wp-includes/class-wp-xmlrpc-server.php */
@@ -2199,7 +2282,9 @@ class wp_xmlrpc_server extends IXR_Server {
 		/** This action is documented in wp-includes/class-wp-xmlrpc-server.php */
 		do_action( 'xmlrpc_call', 'wp.editTerm', $args, $this );
 
-		if ( ! taxonomy_exists( $content_struct['taxonomy'] ) ) {
+		if ( ! isset( $content_struct['taxonomy'] )
+			|| ! taxonomy_exists( $content_struct['taxonomy'] )
+		) {
 			return new IXR_Error( 403, __( 'Invalid taxonomy.' ) );
 		}
 
@@ -2337,7 +2422,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		$result = wp_delete_term( $term_id, $taxonomy->name );
 
 		if ( is_wp_error( $result ) ) {
-			return new IXR_Error( 500, $term->get_error_message() );
+			return new IXR_Error( 500, $result->get_error_message() );
 		}
 
 		if ( ! $result ) {
@@ -2449,7 +2534,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		$username = $args[1];
 		$password = $args[2];
 		$taxonomy = $args[3];
-		$filter   = isset( $args[4] ) ? $args[4] : array();
+		$filter   = $args[4] ?? array();
 
 		$user = $this->login( $username, $password );
 		if ( ! $user ) {
@@ -2516,6 +2601,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * Retrieves a taxonomy.
 	 *
 	 * @since 3.4.0
+	 * @since 7.2.0 Returns an error if the `$fields` argument is not an array.
 	 *
 	 * @see get_taxonomy()
 	 *
@@ -2544,6 +2630,10 @@ class wp_xmlrpc_server extends IXR_Server {
 		$taxonomy = $args[3];
 
 		if ( isset( $args[4] ) ) {
+			if ( ! $this->_is_fields_array( $args[4] ) ) {
+				return $this->error;
+			}
+
 			$fields = $args[4];
 		} else {
 			/**
@@ -2583,6 +2673,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * Retrieves all taxonomies.
 	 *
 	 * @since 3.4.0
+	 * @since 7.2.0 Returns an error if the `$fields` argument is not an array.
 	 *
 	 * @see get_taxonomies()
 	 *
@@ -2607,9 +2698,13 @@ class wp_xmlrpc_server extends IXR_Server {
 
 		$username = $args[1];
 		$password = $args[2];
-		$filter   = isset( $args[3] ) ? $args[3] : array( 'public' => true );
+		$filter   = $args[3] ?? array( 'public' => true );
 
 		if ( isset( $args[4] ) ) {
+			if ( ! $this->_is_fields_array( $args[4] ) ) {
+				return $this->error;
+			}
+
 			$fields = $args[4];
 		} else {
 			/** This action is documented in wp-includes/class-wp-xmlrpc-server.php */
@@ -2652,6 +2747,9 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * names can be used to specify multiple fields. The available conceptual
 	 * groups are 'basic' and 'all'.
 	 *
+	 * @since 3.5.0
+	 * @since 7.2.0 Returns an error if the `$fields` argument is not an array.
+	 *
 	 * @uses get_userdata()
 	 *
 	 * @param array $args {
@@ -2689,6 +2787,10 @@ class wp_xmlrpc_server extends IXR_Server {
 		$user_id  = (int) $args[3];
 
 		if ( isset( $args[4] ) ) {
+			if ( ! $this->_is_fields_array( $args[4] ) ) {
+				return $this->error;
+			}
+
 			$fields = $args[4];
 		} else {
 			/**
@@ -2733,6 +2835,9 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * The optional $fields parameter specifies what fields will be included
 	 * in the response array.
 	 *
+	 * @since 3.5.0
+	 * @since 7.2.0 Returns an error if the `$fields` argument is not an array.
+	 *
 	 * @uses get_users()
 	 * @see wp_getUser() for more on $fields and return values
 	 *
@@ -2756,9 +2861,13 @@ class wp_xmlrpc_server extends IXR_Server {
 
 		$username = $args[1];
 		$password = $args[2];
-		$filter   = isset( $args[3] ) ? $args[3] : array();
+		$filter   = $args[3] ?? array();
 
 		if ( isset( $args[4] ) ) {
+			if ( ! $this->_is_fields_array( $args[4] ) ) {
+				return $this->error;
+			}
+
 			$fields = $args[4];
 		} else {
 			/** This action is documented in wp-includes/class-wp-xmlrpc-server.php */
@@ -2816,6 +2925,9 @@ class wp_xmlrpc_server extends IXR_Server {
 	/**
 	 * Retrieves information about the requesting user.
 	 *
+	 * @since 3.5.0
+	 * @since 7.2.0 Returns an error if the `$fields` argument is not an array.
+	 *
 	 * @uses get_userdata()
 	 *
 	 * @param array $args {
@@ -2839,6 +2951,10 @@ class wp_xmlrpc_server extends IXR_Server {
 		$password = $args[2];
 
 		if ( isset( $args[3] ) ) {
+			if ( ! $this->_is_fields_array( $args[3] ) ) {
+				return $this->error;
+			}
+
 			$fields = $args[3];
 		} else {
 			/** This action is documented in wp-includes/class-wp-xmlrpc-server.php */
@@ -3172,7 +3288,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *     @type int    $1 Page ID.
 	 *     @type string $2 Username.
 	 *     @type string $3 Password.
-	 *     @type string $4 Content.
+	 *     @type array  $4 Content struct, with keys documented on {@see self::mw_newPost()}.
 	 *     @type int    $5 Publish flag. 0 for draft, 1 for publish.
 	 * }
 	 * @return array|IXR_Error
@@ -3650,7 +3766,7 @@ class wp_xmlrpc_server extends IXR_Server {
 
 		$username = $args[1];
 		$password = $args[2];
-		$struct   = isset( $args[3] ) ? $args[3] : array();
+		$struct   = $args[3] ?? array();
 
 		$user = $this->login( $username, $password );
 		if ( ! $user ) {
@@ -3660,11 +3776,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		/** This action is documented in wp-includes/class-wp-xmlrpc-server.php */
 		do_action( 'xmlrpc_call', 'wp.getComments', $args, $this );
 
-		if ( isset( $struct['status'] ) ) {
-			$status = $struct['status'];
-		} else {
-			$status = '';
-		}
+		$status = $struct['status'] ?? '';
 
 		if ( ! current_user_can( 'moderate_comments' ) && 'approve' !== $status ) {
 			return new IXR_Error( 401, __( 'Invalid comment status.' ) );
@@ -4023,7 +4135,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		}
 
 		if ( ! $comment_id ) {
-			return new IXR_Error( 403, __( 'Something went wrong.' ) );
+			return new IXR_Error( 403, __( 'An error occurred while processing your comment. Please ensure all fields are filled correctly and try again.' ) );
 		}
 
 		/**
@@ -4425,7 +4537,7 @@ class wp_xmlrpc_server extends IXR_Server {
 
 		$username = $args[1];
 		$password = $args[2];
-		$struct   = isset( $args[3] ) ? $args[3] : array();
+		$struct   = $args[3] ?? array();
 
 		$user = $this->login( $username, $password );
 		if ( ! $user ) {
@@ -4440,7 +4552,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		do_action( 'xmlrpc_call', 'wp.getMediaLibrary', $args, $this );
 
 		$parent_id = ( isset( $struct['parent_id'] ) ) ? absint( $struct['parent_id'] ) : '';
-		$mime_type = ( isset( $struct['mime_type'] ) ) ? $struct['mime_type'] : '';
+		$mime_type = $struct['mime_type'] ?? '';
 		$offset    = ( isset( $struct['offset'] ) ) ? absint( $struct['offset'] ) : 0;
 		$number    = ( isset( $struct['number'] ) ) ? absint( $struct['number'] ) : -1;
 
@@ -4519,6 +4631,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * Retrieves a post type.
 	 *
 	 * @since 3.4.0
+	 * @since 7.2.0 Returns an error if the `$fields` argument is not an array.
 	 *
 	 * @see get_post_type_object()
 	 *
@@ -4554,6 +4667,10 @@ class wp_xmlrpc_server extends IXR_Server {
 		$post_type_name = $args[3];
 
 		if ( isset( $args[4] ) ) {
+			if ( ! $this->_is_fields_array( $args[4] ) ) {
+				return $this->error;
+			}
+
 			$fields = $args[4];
 		} else {
 			/**
@@ -4593,6 +4710,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * Retrieves post types.
 	 *
 	 * @since 3.4.0
+	 * @since 7.2.0 Returns an error if the `$fields` argument is not an array.
 	 *
 	 * @see get_post_types()
 	 *
@@ -4616,9 +4734,13 @@ class wp_xmlrpc_server extends IXR_Server {
 
 		$username = $args[1];
 		$password = $args[2];
-		$filter   = isset( $args[3] ) ? $args[3] : array( 'public' => true );
+		$filter   = $args[3] ?? array( 'public' => true );
 
 		if ( isset( $args[4] ) ) {
+			if ( ! $this->_is_fields_array( $args[4] ) ) {
+				return $this->error;
+			}
+
 			$fields = $args[4];
 		} else {
 			/** This action is documented in wp-includes/class-wp-xmlrpc-server.php */
@@ -4652,6 +4774,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * Retrieves revisions for a specific post.
 	 *
 	 * @since 3.5.0
+	 * @since 7.2.0 Returns an error if the `$fields` argument is not an array.
 	 *
 	 * The optional $fields parameter specifies what fields will be included
 	 * in the response array.
@@ -4682,6 +4805,10 @@ class wp_xmlrpc_server extends IXR_Server {
 		$post_id  = (int) $args[3];
 
 		if ( isset( $args[4] ) ) {
+			if ( ! $this->_is_fields_array( $args[4] ) ) {
+				return $this->error;
+			}
+
 			$fields = $args[4];
 		} else {
 			/**
@@ -4882,7 +5009,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		$domain = $current_blog->domain;
 		$path   = $current_blog->path . 'xmlrpc.php';
 
-		$blogs = $this->wp_getUsersBlogs( $args );
+		$blogs = $this->wp_getUsersBlogs( array( $args[1], $args[2] ) );
 		if ( $blogs instanceof IXR_Error ) {
 			return $blogs;
 		}
@@ -5043,7 +5170,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		$posts_list = wp_get_recent_posts( $query );
 
 		if ( ! $posts_list ) {
-			$this->error = new IXR_Error( 500, __( 'Either there are no posts, or something went wrong.' ) );
+			$this->error = new IXR_Error( 500, __( 'No posts found or an error occurred while retrieving posts.' ) );
 			return $this->error;
 		}
 
@@ -5144,7 +5271,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		$post_content  = xmlrpc_removepostdata( $content );
 
 		$post_date     = current_time( 'mysql' );
-		$post_date_gmt = current_time( 'mysql', 1 );
+		$post_date_gmt = current_time( 'mysql', true );
 
 		$post_data = compact(
 			'post_author',
@@ -5367,7 +5494,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		$username       = $args[1];
 		$password       = $args[2];
 		$content_struct = $args[3];
-		$publish        = isset( $args[4] ) ? $args[4] : 0;
+		$publish        = $args[4] ?? 0;
 
 		$user = $this->login( $username, $password );
 		if ( ! $user ) {
@@ -5483,8 +5610,8 @@ class wp_xmlrpc_server extends IXR_Server {
 			$post_author = $content_struct['wp_author_id'];
 		}
 
-		$post_title   = isset( $content_struct['title'] ) ? $content_struct['title'] : '';
-		$post_content = isset( $content_struct['description'] ) ? $content_struct['description'] : '';
+		$post_title   = $content_struct['title'] ?? '';
+		$post_content = $content_struct['description'] ?? '';
 
 		$post_status = $publish ? 'publish' : 'draft';
 
@@ -5502,10 +5629,10 @@ class wp_xmlrpc_server extends IXR_Server {
 			}
 		}
 
-		$post_excerpt = isset( $content_struct['mt_excerpt'] ) ? $content_struct['mt_excerpt'] : '';
-		$post_more    = isset( $content_struct['mt_text_more'] ) ? $content_struct['mt_text_more'] : '';
+		$post_excerpt = $content_struct['mt_excerpt'] ?? '';
+		$post_more    = $content_struct['mt_text_more'] ?? '';
 
-		$tags_input = isset( $content_struct['mt_keywords'] ) ? $content_struct['mt_keywords'] : array();
+		$tags_input = $content_struct['mt_keywords'] ?? array();
 
 		if ( isset( $content_struct['mt_allow_comments'] ) ) {
 			if ( ! is_numeric( $content_struct['mt_allow_comments'] ) ) {
@@ -5653,7 +5780,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		}
 
 		// Handle enclosures.
-		$enclosure = isset( $content_struct['enclosure'] ) ? $content_struct['enclosure'] : null;
+		$enclosure = $content_struct['enclosure'] ?? null;
 		$this->add_enclosure_if_new( $post_id, $enclosure );
 
 		$this->attach_uploads( $post_id, $post_content );
@@ -5763,7 +5890,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		$username       = $args[1];
 		$password       = $args[2];
 		$content_struct = $args[3];
-		$publish        = isset( $args[4] ) ? $args[4] : 0;
+		$publish        = $args[4] ?? 0;
 
 		$user = $this->login( $username, $password );
 		if ( ! $user ) {
@@ -5947,7 +6074,7 @@ class wp_xmlrpc_server extends IXR_Server {
 			$post_excerpt = $content_struct['mt_excerpt'];
 		}
 
-		$post_more = isset( $content_struct['mt_text_more'] ) ? $content_struct['mt_text_more'] : '';
+		$post_more = $content_struct['mt_text_more'] ?? '';
 
 		$post_status = $publish ? 'publish' : 'draft';
 		if ( isset( $content_struct[ "{$post_type}_status" ] ) ) {
@@ -5964,7 +6091,7 @@ class wp_xmlrpc_server extends IXR_Server {
 			}
 		}
 
-		$tags_input = isset( $content_struct['mt_keywords'] ) ? $content_struct['mt_keywords'] : array();
+		$tags_input = $content_struct['mt_keywords'] ?? array();
 
 		if ( 'publish' === $post_status || 'private' === $post_status ) {
 			if ( 'page' === $post_type && ! current_user_can( 'publish_pages' ) ) {
@@ -6072,7 +6199,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		}
 
 		// Handle enclosures.
-		$enclosure = isset( $content_struct['enclosure'] ) ? $content_struct['enclosure'] : null;
+		$enclosure = $content_struct['enclosure'] ?? null;
 		$this->add_enclosure_if_new( $post_id, $enclosure );
 
 		$this->attach_uploads( $post_id, $post_content );
@@ -6426,23 +6553,32 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * @since 1.5.0
 	 *
 	 * @param array $args {
-	 *     Method arguments. Note: arguments must be ordered as documented.
+	 *     Method arguments. Note: top-level arguments must be ordered as documented.
 	 *
 	 *     @type int    $0 Blog ID (unused).
 	 *     @type string $1 Username.
 	 *     @type string $2 Password.
-	 *     @type array  $3 Data.
+	 *     @type array  $3 {
+	 *         Data for the file to upload.
+	 *
+	 *         @type string $name    File name. Sanitized with sanitize_file_name().
+	 *         @type string $type    Optional. File MIME type, stored as the attachment's
+	 *                               post MIME type. Default empty string.
+	 *         @type string $bits    Optional. File contents. Default empty string.
+	 *         @type int    $post_id Optional. ID of the post to attach the file to.
+	 *                               Default 0.
+	 *     }
 	 * }
 	 * @return array|IXR_Error
 	 */
 	public function mw_newMediaObject( $args ) {
+		if ( ! $this->minimum_args( $args, 4 ) ) {
+			return $this->error;
+		}
+
 		$username = $this->escape( $args[1] );
 		$password = $this->escape( $args[2] );
 		$data     = $args[3];
-
-		$name = sanitize_file_name( $data['name'] );
-		$type = $data['type'];
-		$bits = $data['bits'];
 
 		$user = $this->login( $username, $password );
 		if ( ! $user ) {
@@ -6456,6 +6592,25 @@ class wp_xmlrpc_server extends IXR_Server {
 			$this->error = new IXR_Error( 401, __( 'Sorry, you are not allowed to upload files.' ) );
 			return $this->error;
 		}
+
+		if (
+			! is_array( $data ) ||
+			! is_string( $data['name'] ?? null ) ||
+			! is_string( $data['type'] ?? '' ) ||
+			! is_string( $data['bits'] ?? '' )
+		) {
+			return new IXR_Error( 400, __( 'Invalid attachment data.' ) );
+		}
+
+		$name = sanitize_file_name( $data['name'] );
+
+		// A name consisting only of characters the sanitizer strips leaves nothing to write to.
+		if ( '' === $name ) {
+			return new IXR_Error( 400, __( 'Invalid attachment data.' ) );
+		}
+
+		$type = $data['type'] ?? '';
+		$bits = $data['bits'] ?? '';
 
 		if ( is_multisite() && upload_is_user_over_quota( false ) ) {
 			$this->error = new IXR_Error(
@@ -6477,7 +6632,8 @@ class wp_xmlrpc_server extends IXR_Server {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param bool $error Whether to pre-empt the media upload. Default false.
+		 * @param string|false $error Error message to return instead of uploading, or false to
+		 *                            allow the upload. Default false.
 		 */
 		$upload_err = apply_filters( 'pre_upload_error', false );
 		if ( $upload_err ) {
@@ -6536,7 +6692,7 @@ class wp_xmlrpc_server extends IXR_Server {
 
 	/*
 	 * MovableType API functions.
-	 * Specs archive on http://web.archive.org/web/20050220091302/http://www.movabletype.org:80/docs/mtmanual_programmatic.html
+	 * Specs archive on https://web.archive.org/web/20050220091302/http://www.movabletype.org/docs/mtmanual_programmatic.html
 	 */
 
 	/**
@@ -6576,7 +6732,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		$posts_list = wp_get_recent_posts( $query );
 
 		if ( ! $posts_list ) {
-			$this->error = new IXR_Error( 500, __( 'Either there are no posts, or something went wrong.' ) );
+			$this->error = new IXR_Error( 500, __( 'No posts found or an error occurred while retrieving posts.' ) );
 			return $this->error;
 		}
 
@@ -7051,7 +7207,7 @@ class wp_xmlrpc_server extends IXR_Server {
 		$remote_source = preg_replace( '/<\/*(h1|h2|h3|h4|h5|h6|p|th|td|li|dt|dd|pre|caption|input|textarea|button|body)[^>]*>/', "\n\n", $remote_source );
 
 		preg_match( '|<title>([^<]*?)</title>|is', $remote_source, $matchtitle );
-		$title = isset( $matchtitle[1] ) ? $matchtitle[1] : '';
+		$title = $matchtitle[1] ?? '';
 		if ( empty( $title ) ) {
 			return $this->pingback_error( 32, __( 'A title on that page cannot be found.' ) );
 		}
